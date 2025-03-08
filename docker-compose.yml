@@ -1,0 +1,30 @@
+services:
+  db:
+    image: mysql:latest
+    container_name: gridSnek_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: coverage_db
+      MYSQL_USER: coverage_user
+      MYSQL_PASSWORD: coverage_password
+      MYSQL_ROOT_PASSWORD: root_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  flask_app:
+    build: .
+    container_name: gridSnek
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - "5000:5000"
+    environment:
+      - DATABASE_URL=mysql+mysqlconnector://coverage_user:coverage_password@db/coverage_db
+    volumes:
+      - .:/app
+
+volumes:
+  mysql_data:

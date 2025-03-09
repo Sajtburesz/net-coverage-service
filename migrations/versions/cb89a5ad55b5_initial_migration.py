@@ -27,7 +27,7 @@ def upgrade():
     op.create_table('network_providers_coverage',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('operator', sa.Integer(), nullable=False),
-    sa.Column('insee_code', sa.String(length=10), nullable=False),
+    sa.Column('insee_code', sa.Integer(), nullable=False),
     sa.Column('type_2g', sa.Boolean(), nullable=False),
     sa.Column('type_3g', sa.Boolean(), nullable=False),
     sa.Column('type_4g', sa.Boolean(), nullable=False),

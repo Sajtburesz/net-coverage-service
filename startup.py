@@ -1,12 +1,14 @@
 import multiprocessing
 import time
+
 from flask import Flask
 from flask_migrate import Migrate, upgrade
 from db import db
 from helpers.data_loader import DataLoader
-from models import NetworkCoverage
+from models import NetworkCoverage, NetworkProviders
 from config import Config
 from transformers.network_coverage_transformer import transform_network_coverage
+from transformers.network_providers_transformer import transform_network_providers
 import models
 
 
@@ -24,10 +26,8 @@ def apply_migrations():
         upgrade()
 
 
-def load_data():
-
+def load_network_coverage_data():
     with app.app_context():
-
         data_loader = DataLoader()
 
         print("Loading network coverage csv...")
@@ -39,9 +39,24 @@ def load_data():
         )
 
 
+def load_network_providers_data():
+    with app.app_context():
+        data_loader = DataLoader()
+
+        print("Loading network providers csv...")
+        data_loader.load_csv(
+            csv_path="static/France_network_providers.csv",
+            model=NetworkProviders,
+            unique_keys=["operator"],
+            transform_functions=[transform_network_providers]
+        )
+
 if __name__ == "__main__":
     time.sleep(15)
     apply_migrations()
 
-    process = multiprocessing.Process(target=load_data)
-    process.start()
+    load_network_providers_data()
+
+    coverage_process = multiprocessing.Process(target=load_network_coverage_data)
+    coverage_process.start()
+

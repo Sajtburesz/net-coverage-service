@@ -1,32 +1,64 @@
 import csv
 import os
 from typing import Callable, Any
+
+from sqlalchemy import insert
+from sqlalchemy.exc import IntegrityError
+
 from db import db
 
+BATCH_SIZE = 100
 
 class DataLoader:
 
-    async def load_csv(self, csv_path: str, model: Any, unique_keys: list[str], transform_functions: list[ Callable ] | None = None) -> None:
+    def load_csv(self, csv_path: str, model: Any, unique_keys: list[str],
+                 transform_functions: list[Callable] | None = None) -> None:
         if not os.path.exists(csv_path):
-            raise AttributeError("Csv file not found")
+            raise AttributeError("CSV file not found")
 
-        async with db.session.begin():
-            with open(csv_path, newline="", encoding="utf-8") as csvfile:
-                reader = csv.DictReader(csvfile)
 
-                for record in reader:
-                    model_record = model()
+        with open(csv_path, newline="", encoding="utf-8") as csvfile:
+
+            sample = csvfile.read(1024)
+            dialect = csv.Sniffer().sniff(sample)
+            csvfile.seek(0)
+            reader = csv.DictReader(csvfile, dialect=dialect)
+
+            stmt = insert(model).prefix_with("IGNORE")
+
+            records = []
+            for record in reader:
+                model_instance = model()
+                try:
                     for function in (transform_functions or []):
-                        function(model_record, record)
+                        function(model_instance, record)
+                except:
+                    continue
 
-                    filters = {key: getattr(model_record, key) for key in unique_keys}
+                model_data = {column.name: getattr(model_instance, column.name) for column in
+                              model.__table__.columns}
 
-                    existing_record = await db.session.execute(
-                        db.select(model).filter_by(**filters)
-                    )
-                    if existing_record.scalar():
-                        print(f"⚡ Skipping existing record: {filters}")
-                        continue
+                records.append(model_data)
 
-                    db.session.add(model_record)
-            await db.session.commit()
+                if len(records) >= BATCH_SIZE:
+                    with db.session.begin():
+                        try:
+                            print("Inserting into db...")
+                            # db.session.bulk_insert_mappings(model, records)
+                            db.session.execute(stmt, records)
+                            db.session.commit()
+                            records = []
+                        except IntegrityError:
+                            db.session.rollback()
+                            raise
+
+            if records:
+                with db.session.begin():
+                    try:
+                        print("Inserting into db...")
+                        # db.session.bulk_insert_mappings(model, records)
+                        db.session.execute(stmt, records)
+                        db.session.commit()
+                    except IntegrityError:
+                        db.session.rollback()
+                        raise

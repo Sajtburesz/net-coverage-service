@@ -13,4 +13,4 @@ ENV FLASK_ENV=development
 
 EXPOSE 5000
 
-CMD ["gunicorn", "-c", "gunicorn.conf.py", "app:app"]
+CMD ["sh", "-c", "python startup.py & exec gunicorn -c gunicorn.conf.py app:app"]

@@ -16,7 +16,3 @@ def get_insee_with_gps(longitude: float, latitude: float) -> int|None:
     insee_code = geojson_data["features"][0]["properties"]["citycode"]
 
     return insee_code if insee_code else None
-
-
-if __name__ == "__main__":
-    print(get_insee_with_gps(-0.66015, 43.814601))

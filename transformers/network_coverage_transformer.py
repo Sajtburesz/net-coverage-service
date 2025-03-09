@@ -1,6 +1,6 @@
 from models.coverage import NetworkCoverage
 from helpers.lambert93_to_gps import lambert93_to_gps
-from helpers.get_insee_and_post_with_gps import get_insee_and_post_with_gps
+from helpers.geo_coding_helper import GeoCodingHelper
 
 def transform_network_coverage(model_instance: NetworkCoverage, record: dict[str, str]) -> None:
     model_instance.operator = int(record["Operateur"])
@@ -10,8 +10,10 @@ def transform_network_coverage(model_instance: NetworkCoverage, record: dict[str
 
     long, lat = lambert93_to_gps(record["x"], record['y'])
 
+    geo_coding_helper = GeoCodingHelper()
+
     try:
-        insee_code, post_code = get_insee_and_post_with_gps(long, lat)
+        insee_code, post_code = geo_coding_helper.get_insee_and_post_with_gps(long, lat)
     except:
         raise KeyError
 

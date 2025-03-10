@@ -53,3 +53,15 @@ def mock_missing_postcode_response():
             }
         }]
     }
+
+@pytest.fixture
+def invalid_gps_param():
+    return {"lon": "invalid", "lat": "48.8566"}
+
+@pytest.fixture
+def any_address_param():
+    return {"q": "Rue de Budapest Paris"}
+
+@pytest.fixture
+def any_gps_param():
+    return {"lon": "2.3522", "lat": "48.8566"}

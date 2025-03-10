@@ -27,6 +27,8 @@ class DataLoader:
         :param unique_keys: Left it in here in case some checks need to be done against some keys
         :param transform_functions: Functions which take a model_instance type of model and a line from the csv(record)
                as parameter, and they do something with the data essentially populating the model_instance
+
+        In its current form this dataloader is quite slow for large datasets. A good solution would be to process data in chunks in parallel.
         """
         if not os.path.exists(csv_path):
             raise AttributeError("CSV file not found")

@@ -12,10 +12,7 @@ def transform_network_coverage(model_instance: NetworkCoverage, record: dict[str
 
     geo_coding_helper = GeoCodingHelper()
 
-    try:
-        insee_code, post_code = geo_coding_helper.get_insee_and_post_with_gps(long, lat)
-    except:
-        raise KeyError
+    insee_code, post_code = geo_coding_helper.get_insee_and_post_with_gps(long, lat)
 
     model_instance.insee_code = insee_code
     model_instance.post_code = post_code

@@ -2,14 +2,14 @@ import csv
 import os
 from typing import Callable, Any
 
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import insert
 from sqlalchemy.exc import IntegrityError
 
-from db import db
-
-BATCH_SIZE = 100
-
 class DataLoader:
+    def __init__(self, db: SQLAlchemy, batch_size: int):
+        self.db = db
+        self.batch_size = batch_size
 
     def load_csv(self, csv_path: str, model: Any, unique_keys: list[str],
                  transform_functions: list[Callable] | None = None) -> None:
@@ -40,25 +40,25 @@ class DataLoader:
 
                 records.append(model_data)
 
-                if len(records) >= BATCH_SIZE:
-                    with db.session.begin():
+                if len(records) >= self.batch_size:
+                    with self.db.session.begin():
                         try:
                             print("Inserting into db...")
-                            # db.session.bulk_insert_mappings(model, records)
-                            db.session.execute(stmt, records)
-                            db.session.commit()
+                            # self.db.session.bulk_insert_mappings(model, records)
+                            self.db.session.execute(stmt, records)
+                            self.db.session.commit()
                             records = []
                         except IntegrityError:
-                            db.session.rollback()
+                            self.db.session.rollback()
                             raise
 
             if records:
-                with db.session.begin():
+                with self.db.session.begin():
                     try:
                         print("Inserting into db...")
-                        # db.session.bulk_insert_mappings(model, records)
-                        db.session.execute(stmt, records)
-                        db.session.commit()
+                        # self.db.session.bulk_insert_mappings(model, records)
+                        self.db.session.execute(stmt, records)
+                        self.db.session.commit()
                     except IntegrityError:
-                        db.session.rollback()
+                        self.db.session.rollback()
                         raise

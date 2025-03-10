@@ -16,6 +16,13 @@ class GeoCodingHelper:
         return self._fetch_geojson_data(geo_search, params={"index": "address, poi", "q": address, "limit": 1})
 
     def _fetch_geojson_data(self, url: str, params: dict) -> tuple[int | None, int | None]:
+        """
+        Fetch Geocoding data from the external API
+        :param url:
+        :param params:
+        :return: city_code or None, post_code or None but never None,None
+        """
+
         response: requests.Response = requests.get(url, params=params)
         response.raise_for_status()
 

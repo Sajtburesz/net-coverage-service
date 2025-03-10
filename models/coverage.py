@@ -8,8 +8,8 @@ class NetworkCoverage(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     operator = db.Column(db.Integer, ForeignKey('network_providers.operator'), nullable=False)
-    insee_code = db.Column(db.Integer, nullable=False)
-    post_code = db.Column(db.Integer, nullable=False)
+    insee_code = db.Column(db.Integer, nullable=True)
+    post_code = db.Column(db.Integer, nullable=True)
     type_2g = db.Column(db.Boolean, nullable=False, default=False)
     type_3g = db.Column(db.Boolean, nullable=False, default=False)
     type_4g = db.Column(db.Boolean, nullable=False, default=False)

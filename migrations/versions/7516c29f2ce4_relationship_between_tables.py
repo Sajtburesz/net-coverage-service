@@ -17,6 +17,8 @@ depends_on = None
 
 
 def upgrade():
+    op.create_unique_constraint('uq_network_providers_operator', 'network_providers', ['operator'])
+
     op.create_foreign_key(
         'fk_network_coverage_operator',
         'network_providers_coverage',
@@ -26,6 +28,6 @@ def upgrade():
         ondelete='CASCADE'
     )
 
-
 def downgrade():
     op.drop_constraint('fk_network_coverage_operator', 'network_providers_coverage', type_='foreignkey')
+    op.drop_constraint('uq_network_providers_operator', 'network_providers', type_='unique')

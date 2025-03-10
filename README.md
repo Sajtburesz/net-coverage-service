@@ -1,8 +1,8 @@
-# GridSnek :snake:
+# net-coverage-service :snake:
 This repository is a for a simple API that helps checking network coverage with each available provider at a geographical location.
 
 ## Endpoints
-GridSnek in total has a whopping 2 endpoints :clap:
+net-coverage-service in total has a whopping 2 endpoints :clap:
 
 /coverage
 ----------
@@ -33,7 +33,7 @@ By accessing the /apidocs endpoint from a browser a Swagger API docs ui will pro
 endpoints and the API could be tried out from there.
 
 ## Setup and Run
-GridSnek is a dockerized Flask application served by Gunicorn for a modern and comfortable experience.
+net-coverage-service is a dockerized Flask application served by Gunicorn for a modern and comfortable experience.
 Data is stored in a Relational Database (in this case mysql). The database runs in a separate docker container and
 spins up before the application.
 

@@ -1,6 +1,6 @@
 import requests
 from exceptions.GeoCodingExceptions import GeoCodingPointNotFound, GeoCodingMissingCityCodes
-from external_adresses import reverse_geocoding, geo_search
+from helpers.external_adresses import reverse_geocoding, geo_search
 
 class GeoCodingHelper:
     def get_insee_and_post_with_gps(self, longitude: float, latitude: float) -> tuple[int | None, int | None]:

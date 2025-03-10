@@ -7,12 +7,27 @@ from sqlalchemy import insert
 from sqlalchemy.exc import IntegrityError
 
 class DataLoader:
+    """
+        Class for loading any data.
+        -> Currently it allows to load any csv
+        Parameters:
+            :param db: any kind of SQLAlchemy db session
+            :param batch_size: Any integer. Data insertion will happen in batches of size batch_size
+    """
     def __init__(self, db: SQLAlchemy, batch_size: int):
         self.db = db
         self.batch_size = batch_size
 
     def load_csv(self, csv_path: str, model: Any, unique_keys: list[str],
                  transform_functions: list[Callable] | None = None) -> None:
+        """
+        Function to load any csv data into the database
+        :param csv_path:
+        :param model: Any SQLAlchemy model that corresponds to the format the data will be inserted into the db
+        :param unique_keys: Left it in here in case some checks need to be done against some keys
+        :param transform_functions: Functions which take a model_instance type of model and a line from the csv(record)
+               as parameter, and they do something with the data essentially populating the model_instance
+        """
         if not os.path.exists(csv_path):
             raise AttributeError("CSV file not found")
 

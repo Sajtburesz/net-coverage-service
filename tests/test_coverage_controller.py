@@ -24,7 +24,7 @@ class TestCoverageController:
 
         result = self.controller.coverage_check(any_gps_param)
 
-        self.geo_coding_helper.get_insee_and_post_with_gps.assert_called_once_with(any_gps_param["lon"], any_gps_param["lat"])
+        self.geo_coding_helper.get_insee_and_post_with_gps.assert_called_once_with(float(any_gps_param["lon"]), float(any_gps_param["lat"]))
         expected_result = {
             "OperatorA": {"2G": True, "3G": False, "4G": True},
             "OperatorB": {"2G": False, "3G": True, "4G": False}

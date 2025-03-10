@@ -11,7 +11,6 @@ from transformers.network_coverage_transformer import transform_network_coverage
 from transformers.network_providers_transformer import transform_network_providers
 import models
 
-
 app = Flask(__name__)
 app.config.from_object(Config)
 
@@ -28,7 +27,7 @@ def apply_migrations():
 
 def load_network_coverage_data():
     with app.app_context():
-        data_loader = DataLoader()
+        data_loader = DataLoader(db, Config.DB_INSERT_BATCH_SIZE)
 
         print("Loading network coverage csv...")
         data_loader.load_csv(
@@ -41,7 +40,7 @@ def load_network_coverage_data():
 
 def load_network_providers_data():
     with app.app_context():
-        data_loader = DataLoader()
+        data_loader = DataLoader(db, Config.DB_INSERT_BATCH_SIZE)
 
         print("Loading network providers csv...")
         data_loader.load_csv(
@@ -55,8 +54,10 @@ if __name__ == "__main__":
     time.sleep(15)
     apply_migrations()
 
-    load_network_providers_data()
+    if bool(Config.LOAD_CSV_DATA):
 
-    coverage_process = multiprocessing.Process(target=load_network_coverage_data)
-    coverage_process.start()
+        load_network_providers_data()
+
+        coverage_process = multiprocessing.Process(target=load_network_coverage_data)
+        coverage_process.start()
 

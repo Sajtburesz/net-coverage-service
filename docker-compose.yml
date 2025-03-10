@@ -12,7 +12,7 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-
+      - ./static/db_init:/docker-entrypoint-initdb.d/ # Initialize DB with already processed data
   flask_app:
     build: .
     container_name: gridSnek
@@ -23,8 +23,13 @@ services:
       - "5000:5000"
     environment:
       - DATABASE_URL=mysql+mysqlconnector://coverage_user:coverage_password@db/coverage_db
-    volumes:
-      - .:/app
+      - LOAD_CSV_DATA=False # Set this to False if it is not the first startup or the database was already populated
+      - DB_INSERT_BATCH_SIZE=100
+#      in case new data was attached to the container in volumes(but it has to match the format of the base csv files as these are bound to a Model)
+#      - CSV_COVERAGE_DATA_PATH=<some_in_container_path>
+#      - CSV_PROVIDERS_DATA_PATH=<some_in_container_path>
+#    volumes:
+#      - .:/app   # For Dev
 
 volumes:
   mysql_data:
